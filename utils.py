@@ -2,6 +2,8 @@
 from torch import nn
 import torch
 from torchvision.models.alexnet import alexnet
+import os
+
 
 ## Specify Alexnet model
 class AlexNet(nn.Module):
@@ -40,3 +42,13 @@ class AlexNet(nn.Module):
         x = self.fc_3(x)
         if 'fc_3' == self.feature_name: return x
         return None 
+
+
+
+def listdir(dir, path=True):
+    files = os.listdir(dir)
+    files = [f for f in files if f != '.DS_Store']
+    files = sorted(files)
+    if path:
+        files = [os.path.join(dir, f) for f in files]
+    return files

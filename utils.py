@@ -3,11 +3,10 @@ from torchvision.transforms import functional as tr
 from PIL import Image
 # import os.path
 import torch
-from utils import listdir, image_to_tensor
 from tqdm import tqdm
 
 
-def load_features(model, conditionsPath):
+def compute_features(model, conditionsPath):
     #takes model and loads the features for that image, needs path to of files in directory
     conditions = listdir(conditionsPath)
     condition_features = {}

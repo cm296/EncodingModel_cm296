@@ -19,7 +19,7 @@ def compute_features(model, conditionsPath, resolutionval,padding):
         c_name = c.split('/')[-1]
         stimuli = listdir(c)
         #resize according to resolution and square the image
-        stimuli = [image_to_tensor(s, resolution=resolutionval) for s in stimuli]
+        stimuli = [image_to_tensor(s, resolution=resolutionval,padding = paddingval) for s in stimuli]
         stimuli = torch.stack(stimuli)
         if torch.cuda.is_available():
             stimuli = stimuli.cuda()
@@ -29,6 +29,20 @@ def compute_features(model, conditionsPath, resolutionval,padding):
         condition_features[c_name] = feats
     return condition_features
 
+def plot_tensor_example(model, conditionsPath, resolutionval,paddingval):
+    #takes model and loads the features for that image, needs path to of files in directory
+    conditions = listdir(conditionsPath)
+    c_name = conditions[0].split('/')[-1]
+    stimuli = listdir(c)
+    s = stimuli[0]
+    #resize according to resolution and square the image
+    tensor_image = image_to_tensor(s, resolution=resolutionval,padding = paddingval)
+    # So we need to reshape it to (H, W, C):
+    tensor_image = tensor_image.view(tensor_image.shape[1], tensor_image.shape[2], tensor_image.shape[0])
+    print(type(tensor_image), tensor_image.shape)
+    plt.imshow(tensor_image)
+    plt.show()
+    # return condition_features
 
 def listdir(dir, path=True):
     files = os.listdir(dir)

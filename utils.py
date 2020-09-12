@@ -11,7 +11,7 @@ from tqdm import tqdm
 imagenet_mean = (0.485, 0.456, 0.406)
 imagenet_std = (0.229, 0.224, 0.225)
 
-def compute_features(model, conditionsPath, resolutionval):
+def compute_features(model, conditionsPath, resolutionval,padding):
     #takes model and loads the features for that image, needs path to of files in directory
     conditions = listdir(conditionsPath)
     condition_features = {}
@@ -39,14 +39,15 @@ def listdir(dir, path=True):
     return files
 
 
-def image_to_tensor(image, resolution=None,padding=None, do_imagenet_norm=True):
+def image_to_tensor(image, resolution=None,padding=False, do_imagenet_norm=True):
     if isinstance(image, str):
         image = Image.open(image).convert('RGB')
     if image.width != image.height:     # if not square image, crop the long side's edges to make it square
         r = min(image.width, image.height)
         image = tr.center_crop(image, (r, r))
-    if padding:     # if not square image, crop the long side's edges to make it square
-        image = tr.pad(input=data, pad=(padding, padding, padding, padding), mode='constant', value=0)
+    if padding is True:     # if not square image, crop the long side's edges to make it square
+        # image = tr.pad(input=data, pad=(padding, padding, padding, padding), mode='reflect', value=0)
+        image = tr.pad(input=data, mode='reflect', value=0)
     if resolution is not None:#f size is an int, smaller edge of the image will be matched to this number
         image = tr.resize(image, resolution) 
     image = tr.to_tensor(image)

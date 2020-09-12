@@ -42,7 +42,7 @@ def listdir(dir, path=True):
 def image_to_tensor(image, resolution=None,padding=None, do_imagenet_norm=True):
     if isinstance(image, str):
         image = Image.open(image).convert('RGB')
-     if image.width != image.height:     # if not square image, crop the long side's edges to make it square
+    if image.width != image.height:     # if not square image, crop the long side's edges to make it square
         r = min(image.width, image.height)
         image = tr.center_crop(image, (r, r))
     if padding:     # if not square image, crop the long side's edges to make it square

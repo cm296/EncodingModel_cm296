@@ -14,7 +14,7 @@ from random import randrange
 imagenet_mean = (0.485, 0.456, 0.406)
 imagenet_std = (0.229, 0.224, 0.225)
 
-def compute_features(model, conditionsPath, resolutionval,paddingval,padding_mode):
+def compute_features(model, conditionsPath, resolutionval,paddingval=0,padding_mode='constant'):
     #takes model and loads the features for that image, needs path to of files in directory
     conditions = listdir(conditionsPath)
     condition_features = {}
@@ -22,7 +22,7 @@ def compute_features(model, conditionsPath, resolutionval,paddingval,padding_mod
         c_name = c.split('/')[-1]
         stimuli = listdir(c)
         #resize according to resolution and square the image
-        stimuli = [image_to_tensor(s, resolution=resolutionval,paddingval = paddingval,padding_mode = padding_mode) for s in stimuli]
+        stimuli = [image_to_tensor(s, resolution=resolutionval,paddingval=paddingval,padding_mode = padding_mode) for s in stimuli]
         stimuli = torch.stack(stimuli)
         # print(stimuli)
         if torch.cuda.is_available():
@@ -33,7 +33,7 @@ def compute_features(model, conditionsPath, resolutionval,paddingval,padding_mod
         condition_features[c_name] = feats
     return condition_features
 
-def plot_tensor_example(conditionsPath, resolution,paddingval,padding_mode='constant'):
+def plot_tensor_example(conditionsPath, resolution,paddingval=0,padding_mode='constant'):
     #takes model and loads the features for that image, needs path to of files in directory
     conditions = listdir(conditionsPath)
     x = randrange(len(conditions))

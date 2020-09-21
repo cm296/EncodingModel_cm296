@@ -14,12 +14,25 @@ from random import randrange
 imagenet_mean = (0.485, 0.456, 0.406)
 imagenet_std = (0.229, 0.224, 0.225)
 
-def compute_features(model, conditionsPath, resolutionval,paddingval=0,padding_mode='constant'):
+def compute_features(model, conditionsPath, resolutionval,WordInf =[],paddingval=0,padding_mode='constant'):
     #takes model and loads the features for that image, needs path to of files in directory
+
     conditions = listdir(conditionsPath)
+    # print(len(conditions))
+
+    if WordInf != np.array([]):
+        new_conditions = []
+        for c in conditions:
+            w = c.split('/')[-1]
+            if w in WordInf:
+                new_conditions.append(c)
+        conditions = new_conditions
+
+
     condition_features = {}
     for c in tqdm(conditions):
         c_name = c.split('/')[-1]
+        
         stimuli = listdir(c)
         #resize according to resolution and square the image
         stimuli = [image_to_tensor(s, resolution=resolutionval,paddingval=paddingval,padding_mode = padding_mode) for s in stimuli]

@@ -3,10 +3,10 @@ from torchvision.models.alexnet import alexnet
 
 ## Specify Alexnet model
 class AlexNet(nn.Module):
-    def __init__(self, feature_name):
+    def __init__(self, feature_name, pretrained_val = True):
         super().__init__()
         self.feature_name = feature_name
-        base = alexnet(pretrained=True)
+        base = alexnet(pretrained=pretrained_val)
         self.conv_1 = base.features[:3]
         self.conv_2 = base.features[3:6]
         self.conv_3 = base.features[6:8]

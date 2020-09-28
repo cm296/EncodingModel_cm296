@@ -14,7 +14,7 @@ from random import randrange
 imagenet_mean = (0.485, 0.456, 0.406)
 imagenet_std = (0.229, 0.224, 0.225)
 
-def compute_features(model, conditionsPath, resolutionval,WordInf =[],paddingval=0,padding_mode='constant'):
+def compute_features(model, conditionsPath, resolutionval = 227,WordInf =[],paddingval=0,padding_mode='constant'):
     #takes model and loads the features for that image, needs path to of files in directory
 
     conditions = listdir(conditionsPath)
@@ -45,6 +45,8 @@ def compute_features(model, conditionsPath, resolutionval,WordInf =[],paddingval
             feats = model(stimuli).mean(dim=0).cpu().numpy()
         condition_features[c_name] = feats
     return condition_features
+
+
 
 def plot_tensor_example(conditionsPath, resolution,paddingval=0,padding_mode='constant'):
     #takes model and loads the features for that image, needs path to of files in directory

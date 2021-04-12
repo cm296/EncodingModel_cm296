@@ -14,11 +14,11 @@ from random import randrange
 imagenet_mean = (0.485, 0.456, 0.406)
 imagenet_std = (0.229, 0.224, 0.225)
 
-def compute_features(model, conditionsPath, resolutionval = 227,WordInf =[],paddingval=0,padding_mode='constant'):
+def compute_features(model, conditionsPath, resolutionval = 224,cropval=256,WordInf =[],paddingval=0,padding_mode='constant'):
     #takes model and loads the features for that image, needs path to of files in directory
 
     conditions = listdir(conditionsPath)
-    # print(len(conditions))
+    # print(conditions)
 
     if WordInf != np.array([]):
         new_conditions = []
@@ -35,7 +35,8 @@ def compute_features(model, conditionsPath, resolutionval = 227,WordInf =[],padd
         
         stimuli = listdir(c)
         #resize according to resolution and square the image
-        stimuli = [image_to_tensor(s, resolution=resolutionval,paddingval=paddingval,padding_mode = padding_mode) for s in stimuli]
+        stimuli = [image_to_tensor(s, resolution=resolutionval,cropval = cropval,paddingval=paddingval,padding_mode = padding_mode) for s in stimuli]
+        # print(stimuli)
         stimuli = torch.stack(stimuli)
         # print(stimuli)
         if torch.cuda.is_available():
@@ -48,7 +49,7 @@ def compute_features(model, conditionsPath, resolutionval = 227,WordInf =[],padd
 
 
 
-def plot_tensor_example(conditionsPath, resolution,paddingval=0,padding_mode='constant'):
+def plot_tensor_example(conditionsPath, resolution,paddingval,cropval,padding_mode='constant'):
     #takes model and loads the features for that image, needs path to of files in directory
     conditions = listdir(conditionsPath)
     x = randrange(len(conditions))
@@ -56,7 +57,7 @@ def plot_tensor_example(conditionsPath, resolution,paddingval=0,padding_mode='co
     stimuli = listdir(conditions[x])
     s = stimuli[0]
     #resize according to resolution and square the image
-    tensor_image = image_to_tensor(s, resolution=resolution,paddingval = paddingval,padding_mode = padding_mode)
+    tensor_image = image_to_tensor(s, resolution=resolution,cropval = cropval, paddingval = paddingval,padding_mode = padding_mode)
     # #convert image back to Height,Width,Channels
     img = np.transpose(tensor_image.numpy(), (1,2,0))
     # #show the image
@@ -68,13 +69,14 @@ def plot_tensor_example(conditionsPath, resolution,paddingval=0,padding_mode='co
 def listdir(dir, path=True):
     files = os.listdir(dir)
     files = [f for f in files if f != '.DS_Store']
+    files = [f for f in files if f != '.ipynb_checkpoints']
     files = sorted(files)
     if path:
         files = [os.path.join(dir, f) for f in files]
     return files
 
 
-def image_to_tensor(image, resolution=None,paddingval=None,padding_mode = 'constant', do_imagenet_norm=True, do_padding = True):
+def image_to_tensor(image, resolution=None, cropval = None,paddingval=None,padding_mode = 'constant', do_imagenet_norm=True, do_padding = True):
     if isinstance(image, str):
         image = Image.open(image).convert('RGB')
     if image.width != image.height:     # if not square image, crop the long side's edges to make it square
@@ -85,6 +87,8 @@ def image_to_tensor(image, resolution=None,paddingval=None,padding_mode = 'const
         # image = tr.pad(input=data, mode='reflect', value=0)
     if resolution is not None:#f size is an int, smaller edge of the image will be matched to this number
         image = tr.resize(image, resolution) 
+    if cropval is not None:     # if not square image, crop the long side's edges to make it square
+        image = tr.center_crop(image, (cropval, cropval))
     image = tr.to_tensor(image)
     if do_imagenet_norm:
         image = imagenet_norm(image)
